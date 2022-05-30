@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from watchlist.models import Movie
+from watchlist.models import Watchlist, StreamPlatform
 
 
 def is_active(value):
@@ -7,14 +7,14 @@ def is_active(value):
         raise serializers.ValidationError("Movies must be active")
 
 
-class MovieSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    name = serializers.CharField()
-    description = serializers.CharField()
-    active = serializers.BooleanField(validators=[is_active])
+class WatchlistSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Watchlist
+        fields = "__all__"
 
     def create(self, validated_data):
-        return Movie.objects.create(**validated_data)
+        return Watchlist.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
@@ -23,14 +23,9 @@ class MovieSerializer(serializers.Serializer):
         instance.save()
         return instance
 
-    def validate(self, data):
-        if data['name'] == data['description']:
-            raise serializers.ValidationError("Title and description should not be the same")
 
-        return data
+class StreamPlatformSerializer(serializers.ModelSerializer):
 
-    def validate_name(self, value):
-        if len(value) < 2:
-            raise serializers.ValidationError("Name is too short!")
-
-        return value
+    class Meta:
+        model = StreamPlatform
+        fields = "__all__"
