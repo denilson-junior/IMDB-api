@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from watchlist.models import Watchlist, StreamPlatform
+from watchlist.models import Review, Watchlist, StreamPlatform
 
 
 def is_active(value):
@@ -7,7 +7,15 @@ def is_active(value):
         raise serializers.ValidationError("Movies must be active")
 
 
+class ReviewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Review
+        fields = "__all__"
+
+
 class WatchlistSerializer(serializers.ModelSerializer):
+    reviews = ReviewSerializer(many=True, read_only=True)
 
     class Meta:
         model = Watchlist
@@ -30,3 +38,5 @@ class StreamPlatformSerializer(serializers.ModelSerializer):
     class Meta:
         model = StreamPlatform
         fields = "__all__"
+
+
