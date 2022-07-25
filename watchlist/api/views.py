@@ -16,8 +16,8 @@ class WatchList(generics.ListCreateAPIView):
 class WatchDetail(APIView):
     def get_object(self, pk):
         try:
-            return WatchList.objects.get(pk=pk)
-        except WatchList.DoesNotExist:
+            return Watchlist.objects.get(pk=pk)
+        except Watchlist.DoesNotExist:
             raise Http404
 
     def get(self, request, pk):
@@ -97,6 +97,16 @@ class StreamPlatformDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class ReviewCreate(generics.CreateAPIView):
+    serializer_class = ReviewSerializer
+
+    def perform_create(self, serializer):
+        pk = self.kwargs.get('pk')
+        movie = Watchlist.objects.get(pk=pk)
+
+        serializer.save(watchlist=movie)
+
+
 class ReviewDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
@@ -105,12 +115,12 @@ class ReviewDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
         return self.retrieve(request, *args, **kwargs)
 
 
-class ReviewList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
-    queryset = Review.objects.all()
+class ReviewList(mixins.ListModelMixin, generics.GenericAPIView):
     serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return Review.objects.filter(watchlist=pk)
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)

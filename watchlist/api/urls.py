@@ -1,5 +1,13 @@
 from django.urls import path
-from watchlist.api.views import WatchList, WatchDetail, StreamPlatformList, StreamPlatformDetail, ReviewDetail, ReviewList
+from watchlist.api.views import (
+    WatchList, 
+    WatchDetail, 
+    StreamPlatformList, 
+    StreamPlatformDetail, 
+    ReviewDetail, 
+    ReviewList,
+    ReviewCreate
+)
 
 urlpatterns = [
     path('list/', WatchList.as_view(), name='watchlist-list'),
@@ -7,6 +15,7 @@ urlpatterns = [
     path('stream/', StreamPlatformList.as_view(), name='stream'),
     path('stream/<int:pk>', StreamPlatformDetail.as_view(), name='stream-detail'),
 
+    path('stream/<int:pk>/review-create', ReviewCreate.as_view(), name='review-create'),
     path('stream/<int:pk>/review', ReviewList.as_view(), name='review-list'),
     path('stream/review/<int:pk>', ReviewDetail.as_view(), name='review-detail'),
 ]
